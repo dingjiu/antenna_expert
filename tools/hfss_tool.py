@@ -36,8 +36,9 @@ def run_hfss_simulation(spec_json: str, theory_json: str) -> str:
         wrapper.initialize_hfss()
         
         if theory.antenna_type == "Microstrip Patch":
-            wrapper.create_patch_antenna_model(
+            wrapper.create_patch_antenna_model_with_stackup(
                 params=theory.initial_params_mm,
+                center_freq_ghz=spec.center_freq_ghz,
                 material=spec.substrate_material,
                 er=spec.substrate_er
             )

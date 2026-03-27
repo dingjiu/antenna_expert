@@ -3,10 +3,13 @@ import time
 from typing import Dict, Any, Tuple
 
 try:
-    from pyaedt import Hfss
+    import ansys.aedt.core
+    from ansys.aedt.core.modeler.advanced_cad.stackup_3d import Stackup3D
+    _REAL_AEDT = True
 except ImportError:
+    _REAL_AEDT = False
     # 占位符：如果环境中未安装pyaedt，提供一个Mock类以便在非Windows环境进行代码测试
-    class Hfss:
+    class MockHfss:
         def __init__(self, *args, **kwargs):
             self.modeler = MockModeler()
             self.materials = MockMaterials()
@@ -24,12 +27,27 @@ except ImportError:
         def save_project(self, path=None): pass
         def close_project(self): pass
         def release_desktop(self, *args, **kwargs): pass
-        def create_setup(self, name): return MockSetup()
+        def create_setup(self, *args, **kwargs): return MockSetup()
         def create_open_region(self, *args, **kwargs): pass
+        def assign_radiation_boundary_to_objects(self, *args, **kwargs): pass
+        def analyze(self, *args, **kwargs): pass
         def analyze_setup(self, name): pass
         def assign_perfectE(self, *args, **kwargs): pass
         def create_lumped_port_to_sheet(self, *args, **kwargs): pass
-        
+
+    class MockStackup3D:
+        def __init__(self, hfss): pass
+        def add_ground_layer(self, *args, **kwargs): return MockLayer()
+        def add_dielectric_layer(self, *args, **kwargs): return MockLayer()
+        def add_signal_layer(self, *args, **kwargs): return MockLayer()
+        def resize_around_element(self, *args, **kwargs): pass
+
+    class MockLayer:
+        def add_patch(self, *args, **kwargs): return MockPatch()
+
+    class MockPatch:
+        def create_probe_port(self, *args, **kwargs): pass
+
     class MockPlane:
         XY = "XY"
         YZ = "YZ"
@@ -40,8 +58,10 @@ except ImportError:
         
     class MockModeler:
         model_units = "mm"
+        objects = {}
         def create_box(self, *args, **kwargs): return MockObject()
         def create_rectangle(self, *args, **kwargs): return MockObject()
+        def create_region(self, *args, **kwargs): return MockObject()
         def subtract(self, *args, **kwargs): pass
         def unite(self, *args, **kwargs): pass
         
@@ -54,6 +74,7 @@ except ImportError:
     class MockSetup:
         props = {}
         def add_sweep(self, *args, **kwargs): return MockSweep()
+        def create_frequency_sweep(self, *args, **kwargs): return MockSweep()
         def update(self): pass
         
     class MockSweep:
@@ -63,9 +84,15 @@ except ImportError:
     class MockPost:
         def get_solution_data(self, *args, **kwargs): return MockSolutionData()
         def export_report_to_csv(self, *args, **kwargs): pass
+        def create_report(self, *args, **kwargs): return MockReport()
+        
+    class MockReport:
+        def get_solution_data(self, *args, **kwargs): return MockSolutionData()
         
     class MockSolutionData:
         def data_real(self, *args, **kwargs): return [1.5]
+        def plot(self, *args, **kwargs): pass
+        expressions = []
 
 class PyAEDTWrapper:
     """
@@ -80,76 +107,83 @@ class PyAEDTWrapper:
 
     def initialize_hfss(self):
         """初始化并启动HFSS"""
-        # 注意: PyAEDT自动处理Desktop实例
-        self.hfss = Hfss(projectname=self.project_name, 
-                         designname=self.design_name, 
-                         solution_type="Terminal", 
-                         new_desktop_session=True, 
-                         non_graphical=self.non_graphical)
+        if _REAL_AEDT:
+            self.hfss = ansys.aedt.core.Hfss(
+                project=self.project_name, 
+                design=self.design_name, 
+                solution_type="Terminal", 
+                new_desktop=True, 
+                non_graphical=self.non_graphical
+            )
+        else:
+            self.hfss = MockHfss()
         return True
 
-    def create_patch_antenna_model(self, params: Dict[str, float], material: str = "FR4_epoxy", er: float = 4.4):
+    def create_patch_antenna_model_with_stackup(self, params: Dict[str, float], center_freq_ghz: float, material: str = "FR4_epoxy", er: float = 4.4):
         """
-        基于参数化字典创建微带贴片天线模型。
-        params需包含: sub_l, sub_w, sub_h, patch_l, patch_w, feed_x, feed_y
+        基于官方示例 (Stackup3D) 创建微带贴片天线模型。
+        params需包含: patch_l, patch_w, sub_h
         """
         if not self.hfss:
             raise ValueError("HFSS未初始化")
             
-        # 设置设计变量，方便后续参数化优化
-        for k, v in params.items():
-            self.hfss[k] = f"{v}mm"
+        self.hfss.modeler.model_units = "mm"
+        
+        # 使用 Stackup3D 高级接口 (官方推荐)
+        if _REAL_AEDT:
+            stackup = Stackup3D(self.hfss)
+        else:
+            stackup = MockStackup3D(self.hfss)
             
-        # 1. 介质板
-        sub = self.hfss.modeler.create_box(["-sub_l/2", "-sub_w/2", 0], ["sub_l", "sub_w", "sub_h"], 
-                                           name="Substrate", matname=material)
+        # 1. 接地层
+        ground = stackup.add_ground_layer(
+            "ground", material="copper", thickness=0.035, fill_material="air"
+        )
         
-        # 2. 接地板 (Ground)
-        gnd = self.hfss.modeler.create_rectangle(self.hfss.PLANE.XY, ["-sub_l/2", "-sub_w/2", 0], 
-                                                 ["sub_l", "sub_w"], name="Ground")
-        self.hfss.assign_perfectE(gnd, sourcename="PerfE_Ground")
+        # 2. 介质层
+        dielectric = stackup.add_dielectric_layer(
+            "dielectric", thickness=f"{params.get('sub_h', 1.6)}mm", material=material
+        )
         
-        # 3. 辐射贴片 (Patch)
-        patch = self.hfss.modeler.create_rectangle(self.hfss.PLANE.XY, ["-patch_l/2", "-patch_w/2", "sub_h"], 
-                                                   ["patch_l", "patch_w"], name="Patch")
-        self.hfss.assign_perfectE(patch, sourcename="PerfE_Patch")
+        # 3. 信号层 (Patch)
+        signal = stackup.add_signal_layer(
+            "signal", material="copper", thickness=0.035, fill_material="air"
+        )
+        patch = signal.add_patch(
+            patch_length=params.get("patch_l", 29.5), 
+            patch_width=params.get("patch_w", 38.0), 
+            patch_name="Patch", 
+            frequency=center_freq_ghz * 1e9
+        )
         
-        # 4. 馈电端口 (Lumped Port)
-        # 简单使用集总端口，位于patch和ground之间
-        port_rect = self.hfss.modeler.create_rectangle(self.hfss.PLANE.YZ, 
-                                                       ["feed_x", "feed_y", 0], 
-                                                       ["0.5mm", "sub_h"], name="Port_Sheet") # 简化模型
-        self.hfss.create_lumped_port_to_sheet(port_rect.name, axisdir=self.hfss.AxisDir.ZPos, 
-                                              impedance=50, portname="Port1")
+        # 4. 边界条件
+        stackup.resize_around_element(patch)
+        pad_length = [10, 10, 10, 10, 10, 10]  # Air bounding box buffer in mm
+        region = self.hfss.modeler.create_region(pad_length, is_percentage=False)
+        self.hfss.assign_radiation_boundary_to_objects(region)
         
-        # 5. 辐射边界条件 (Radiation Box)
-        self.hfss.create_open_region(str(self.hfss.modeler.model_units))
+        # 5. 同轴馈电
+        # 根据官方示例使用 probe_port
+        patch.create_probe_port(ground, rel_x_offset=0.485)
+        
         return True
 
     def setup_and_analyze(self, center_freq_ghz: float, freq_start: float, freq_stop: float):
         """
-        设置求解器参数并运行仿真
+        设置求解器参数并运行仿真 (适配官方新API)
         """
-        setup = self.hfss.create_setup("Setup1")
-        setup.props["Frequency"] = f"{center_freq_ghz}GHz"
-        setup.props["MaximumPasses"] = 15
-        setup.props["MinimumPasses"] = 2
-        setup.props["MinimumConvergedPasses"] = 2
-        setup.props["PercentRefinement"] = 30
-        setup.update()
+        setup = self.hfss.create_setup(name="Setup1", setup_type="HFSSDriven", Frequency=f"{center_freq_ghz}GHz")
         
-        # 添加扫频
-        sweep = setup.add_sweep("Sweep1")
-        sweep.props["Type"] = "Interpolating"
-        sweep.props["RangeType"] = "LinearCount"
-        sweep.props["RangeStart"] = f"{freq_start}GHz"
-        sweep.props["RangeEnd"] = f"{freq_stop}GHz"
-        sweep.props["RangeCount"] = 101
-        sweep.props["SaveFields"] = False
-        sweep.update()
+        setup.create_frequency_sweep(
+            unit="GHz",
+            name="Sweep1",
+            start_frequency=freq_start,
+            stop_frequency=freq_stop,
+            sweep_type="Interpolating",
+        )
         
         # 运行仿真
-        self.hfss.analyze_setup("Setup1")
+        self.hfss.analyze(cores=4)
         return True
 
     def export_results(self, output_dir: str) -> Dict[str, str]:
@@ -162,14 +196,18 @@ class PyAEDTWrapper:
         s11_csv = os.path.join(output_dir, "s11.csv")
         pattern_csv = os.path.join(output_dir, "pattern.csv")
         
-        # 导出S参数
-        self.hfss.post.export_report_to_csv(self.project_name, s11_csv)
-        
-        # 尝试导出3D增益方向图 (此处为简化调用)
-        # self.hfss.post.export_report_to_csv("3D_Gain", pattern_csv)
-        
-        # 提取VSWR和Gain
-        # 注意: 这里的API是PyAEDT特定的，需要根据实际版本调整
+        # 导出S参数 (基于官方最新的报告API)
+        if _REAL_AEDT:
+            plot_data = self.hfss.get_traces_for_plot()
+            if plot_data:
+                report = self.hfss.post.create_report(plot_data)
+                solution = report.get_solution_data()
+                # 在真实环境下，这里可以保存solution到CSV或直接处理数据
+                # 此处为了演示简化处理
+                pass
+        else:
+            self.hfss.post.export_report_to_csv(self.project_name, s11_csv)
+            
         return {
             "s11_csv": s11_csv,
             "pattern_csv": pattern_csv

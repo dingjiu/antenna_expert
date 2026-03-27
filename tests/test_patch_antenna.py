@@ -24,7 +24,7 @@ def test_pyaedt_wrapper_mock():
     }
     
     print("开始测试创建模型...")
-    wrapper.create_patch_antenna_model(params)
+    wrapper.create_patch_antenna_model_with_stackup(params, 2.4)
     print("模型创建测试通过。")
     
     print("开始测试仿真设置...")

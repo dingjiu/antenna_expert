@@ -1,0 +1,54 @@
+ 
+Ansys Electronics Desktop Version 2025.2.0, Build: 2025-05-16 11:57:52
+Location: /mnt/data/Ansys/ansys_inc/v252/AnsysEM/ansysedt.exe
+Non Graphical Mode: No Project??
+Starting Batch Run: 8:47:04 PM  Mar 27, 2026
+Temp directory: /tmp
+Project directory: /home/dorji/Ansoft
+[info] GRPC server running on port: 45003.
+
+[error] Project:TestProject, Design:HFSSDesign (Terminal Network), Script macro error: Failed to compute face center as the face is not planar.
+ (08:47:31 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), 'Solve inside' for object 'Probe_feed_outer_ObjectFromFace1' is unset, due to material assignment change. (08:47:32 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Port 'Probe_Port': Wave direction was specified for the newly created port based on attached terminals. (08:47:32 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), Renormalizing the port impedance will not impact the field results if the 'Include Port Post Processing Effects' is disabled in Edit Sources. (08:47:32 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), Adaptive Passes did not converge based on specified criteria. (08:48:11 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), An interpolating frequency sweep with 401 points has been started using HFSS - Solving Distributed. (08:48:11 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Interpolating frequency sweep complete. Converged. (08:48:36 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Normal completion of simulation on server: Local Machine. (08:48:36 PM  Mar 27, 2026)
+[error] Project:TestProject, Design:HFSSDesign (Terminal Network), Report '/home/dorji/hffs_agent/antenna_expert/simulation_results/s11.csv' not found. (08:48:36 PM  Mar 27, 2026)
+ 
+Ansys Electronics Desktop Version 2025.2.0, Build: 2025-05-16 11:57:52
+Location: /mnt/data/Ansys/ansys_inc/v252/AnsysEM/ansysedt.exe
+Non Graphical Mode: No Project??
+Starting Batch Run: 8:48:58 PM  Mar 27, 2026
+Temp directory: /tmp
+Project directory: /home/dorji/Ansoft
+[info] GRPC server running on port: 47587.
+
+[error] Project:TestProject, Design:HFSSDesign (Terminal Network), Script macro error: Failed to compute face center as the face is not planar.
+ (08:49:08 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), 'Solve inside' for object 'Probe_feed_outer_ObjectFromFace1' is unset, due to material assignment change. (08:49:08 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Port 'Probe_Port': Wave direction was specified for the newly created port based on attached terminals. (08:49:08 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), Renormalizing the port impedance will not impact the field results if the 'Include Port Post Processing Effects' is disabled in Edit Sources. (08:49:08 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), Adaptive Passes did not converge based on specified criteria. (08:49:45 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), An interpolating frequency sweep with 401 points has been started using HFSS - Solving Distributed. (08:49:45 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Interpolating frequency sweep complete. Converged. (08:50:11 PM  Mar 27, 2026)
+[info] Project:TestProject, Design:HFSSDesign (Terminal Network), Normal completion of simulation on server: Local Machine. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_ground_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_dielectric_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_signal_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_x_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_y_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_length' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_width' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'Phase' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:11 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_ground_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_dielectric_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'layer_signal_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_x_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_y_position' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_length' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'dielectric_width' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+[warning] Project:TestProject, Design:HFSSDesign (Terminal Network), The variable  'Phase' doesn't have an associated sweep and is excluded from the definition of trace. (08:50:12 PM  Mar 27, 2026)
+Stopping Batch Run: 8:50:12 PM  Mar 27, 2026
