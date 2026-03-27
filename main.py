@@ -8,7 +8,7 @@ import json
 
 def load_pyaedt_skills():
     """读取并精简 PyAEDT 技能库，防止 Prompt 过长"""
-    skills_file = "pyaedt_skills.json"
+    skills_file = os.path.join("skill", "pyaedt_skills.json")
     if not os.path.exists(skills_file):
         return ""
         

@@ -139,8 +139,8 @@ def main():
             md_content += f"- **描述**: {s['description']}\n\n"
             
     # 输出结果
-    output_json = "/home/dorji/hffs_agent/antenna_expert/pyaedt_skills.json"
-    output_md = "/home/dorji/hffs_agent/antenna_expert/pyaedt_skills.md"
+    output_json = "/home/dorji/hffs_agent/antenna_expert/skill/pyaedt_skills.json"
+    output_md = "/home/dorji/hffs_agent/antenna_expert/skill/pyaedt_skills.md"
     
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(categorized_skills, f, ensure_ascii=False, indent=4)

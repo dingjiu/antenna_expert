@@ -66,8 +66,10 @@ antenna_expert/
 │   └── hfss_tool.py         # AutoGen 专属工具函数，供 LLM 通过 Function Calling 调用
 ├── utils/
 │   └── pyaedt_helper.py     # PyAEDT 封装类，实际操作 HFSS 建立模型、求解、导出的底层代码
-├── parse_pyaedt_skills.py   # AST 源码解析工具，用于从 pyaedt 提取 API
-├── pyaedt_skills.json       # 自动生成的全量 PyAEDT 仿真技能字典
+├── skill/                   # Agent 技能库模块
+│   ├── parse_pyaedt_skills.py   # AST 源码解析工具，用于从 pyaedt 提取 API
+│   ├── pyaedt_skills.json       # 自动生成的全量 PyAEDT 仿真技能字典 (Agent读取)
+│   └── pyaedt_skills.md         # 技能库的人类可读 Markdown 文档
 └── requirements.txt         # 依赖清单
 ```
 
