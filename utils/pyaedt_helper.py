@@ -14,6 +14,7 @@ except ImportError:
             self.modeler = MockModeler()
             self.materials = MockMaterials()
             self.PLANE = MockPlane()
+            self.AXIS = MockPlane()
             self.AxisDir = MockAxisDir()
             self.post = MockPost()
             self._vars = {}
@@ -52,6 +53,7 @@ except ImportError:
         XY = "XY"
         YZ = "YZ"
         ZX = "ZX"
+        Z = "Z"
         
     class MockAxisDir:
         ZPos = "ZPos"
@@ -62,6 +64,7 @@ except ImportError:
         def create_box(self, *args, **kwargs): return MockObject()
         def create_rectangle(self, *args, **kwargs): return MockObject()
         def create_region(self, *args, **kwargs): return MockObject()
+        def create_cylinder(self, *args, **kwargs): return MockObject()
         def subtract(self, *args, **kwargs): pass
         def unite(self, *args, **kwargs): pass
         
@@ -165,6 +168,64 @@ class PyAEDTWrapper:
         # 5. 同轴馈电
         # 根据官方示例使用 probe_port
         patch.create_probe_port(ground, rel_x_offset=0.485)
+        
+        return True
+
+    def create_dipole_antenna(self, params: Dict[str, float], center_freq_ghz: float):
+        """
+        基于官方示例 dipole.py 创建半波偶极子天线。
+        params需包含: length, radius, gap
+        """
+        if not self.hfss:
+            raise ValueError("HFSS未初始化")
+            
+        self.hfss.modeler.model_units = "mm"
+        
+        length = params.get("length", 60.0)
+        radius = params.get("radius", 1.0)
+        gap = params.get("gap", 2.0)
+        
+        # 将参数设置为 HFSS 设计变量，方便参数化扫频和优化
+        self.hfss["length"] = f"{length}mm"
+        self.hfss["radius"] = f"{radius}mm"
+        self.hfss["gap"] = f"{gap}mm"
+        
+        # 1. 创建上臂 (Positive Arm)
+        arm_p = self.hfss.modeler.create_cylinder(
+            orientation=self.hfss.AXIS.Z,
+            origin=[0, 0, "gap/2"],
+            radius="radius",
+            height="length/2 - gap/2",
+            name="arm_p",
+            matname="copper"
+        )
+        
+        # 2. 创建下臂 (Negative Arm)
+        arm_n = self.hfss.modeler.create_cylinder(
+            orientation=self.hfss.AXIS.Z,
+            origin=[0, 0, "-gap/2"],
+            radius="radius",
+            height="-length/2 + gap/2",
+            name="arm_n",
+            matname="copper"
+        )
+        
+        # 3. 创建端口源 (Lumped Port)
+        port_rect = self.hfss.modeler.create_rectangle(
+            orientation=self.hfss.PLANE.YZ,
+            origin=[0, "-radius", "-gap/2"],
+            sizes=["2*radius", "gap"],
+            name="port_sheet"
+        )
+        self.hfss.create_lumped_port_to_sheet(
+            port_rect.name,
+            axisdir=self.hfss.AxisDir.ZPos,
+            portname="Port1",
+            impedance=50
+        )
+        
+        # 4. 开放区域边界条件 (Radiation Boundary)
+        self.hfss.create_open_region(str(self.hfss.modeler.model_units))
         
         return True
 

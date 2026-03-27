@@ -44,9 +44,12 @@ def main():
         name="TheoryExpert",
         system_prompt=f"""你是一个天线理论专家。
 请根据需求分析工程师输出的标准化天线需求(JSON)，计算天线的理论初始尺寸和性能阈值。
+我们当前系统支持的仿真类型(antenna_type)包括：
+1. "Microstrip Patch" (微带贴片天线)：需要提供 patch_l, patch_w, sub_h。
+2. "Dipole" (半波偶极子天线)：需要提供 length (总长，通常为半波长), radius (臂半径), gap (中间馈电间隙)。
+
 严格输出JSON格式，匹配以下Pydantic Schema:
 {AntennaTheoryParams.schema_json()}
-微带天线计算提示：宽度 W = (c / (2 * f)) * sqrt(2 / (er + 1))；长度 L = c / (2 * f * sqrt(ereff)) - 2 * delta_L。
 只输出JSON，不要包含其他文字。""",
         llm_config=llm_config
     )

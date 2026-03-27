@@ -42,6 +42,11 @@ def run_hfss_simulation(spec_json: str, theory_json: str) -> str:
                 material=spec.substrate_material,
                 er=spec.substrate_er
             )
+        elif theory.antenna_type == "Dipole":
+            wrapper.create_dipole_antenna(
+                params=theory.initial_params_mm,
+                center_freq_ghz=spec.center_freq_ghz
+            )
         else:
             raise NotImplementedError(f"不支持的天线类型: {theory.antenna_type}")
             
