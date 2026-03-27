@@ -2,6 +2,7 @@
 pyaedt-examples-main/
 pyaedt/
 simulation_results/
+*.log
 
 # Large Files and Downloads
 *.crdownload
