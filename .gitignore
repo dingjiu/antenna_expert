@@ -3,6 +3,14 @@ pyaedt-examples-main/
 pyaedt/
 simulation_results/
 
+# Large Files and Downloads
+*.crdownload
+*.iso
+*.tar
+*.zip
+*.rar
+*.gz
+
 # Python Ignore
 __pycache__/
 *.py[cod]
