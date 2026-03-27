@@ -18,9 +18,10 @@ except ImportError:
             self.AxisDir = MockAxisDir()
             self.post = MockPost()
             self._vars = {}
-            pass
+
         def __setitem__(self, key, value):
             self._vars[key] = value
+
         def __getitem__(self, key):
             return self._vars.get(key)
         def insert_design(self, name): pass
@@ -191,8 +192,10 @@ class PyAEDTWrapper:
         self.hfss["gap"] = f"{gap}mm"
         
         # 1. 创建上臂 (Positive Arm)
+        # 注意: 在真实的 PyAEDT 中应使用 self.hfss.AXIS.Z，为兼容 Mock 做了容错处理
+        z_axis = getattr(getattr(self.hfss, 'AXIS', None), 'Z', "Z")
         arm_p = self.hfss.modeler.create_cylinder(
-            orientation=self.hfss.AXIS.Z,
+            orientation=z_axis,
             origin=[0, 0, "gap/2"],
             radius="radius",
             height="length/2 - gap/2",
@@ -202,7 +205,7 @@ class PyAEDTWrapper:
         
         # 2. 创建下臂 (Negative Arm)
         arm_n = self.hfss.modeler.create_cylinder(
-            orientation=self.hfss.AXIS.Z,
+            orientation=z_axis,
             origin=[0, 0, "-gap/2"],
             radius="radius",
             height="-length/2 + gap/2",
@@ -211,15 +214,17 @@ class PyAEDTWrapper:
         )
         
         # 3. 创建端口源 (Lumped Port)
+        # 兼容处理: 检查 PLANE 属性是否存在
+        yz_plane = getattr(getattr(self.hfss, 'PLANE', None), 'YZ', "YZ")
         port_rect = self.hfss.modeler.create_rectangle(
-            orientation=self.hfss.PLANE.YZ,
+            orientation=yz_plane,
             origin=[0, "-radius", "-gap/2"],
             sizes=["2*radius", "gap"],
             name="port_sheet"
         )
         self.hfss.create_lumped_port_to_sheet(
             port_rect.name,
-            axisdir=self.hfss.AxisDir.ZPos,
+            axisdir=getattr(getattr(self.hfss, 'AxisDir', None), 'ZPos', "ZPos"),
             portname="Port1",
             impedance=50
         )
