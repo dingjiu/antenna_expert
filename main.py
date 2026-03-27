@@ -61,7 +61,7 @@ def main():
         print("警告: 未找到 OAI_CONFIG_LIST，使用默认配置占位。请配置大模型API。")
         config_list = [{
             "model": "deepseek-chat", 
-            "api_key": os.environ.get("OPENAI_API_KEY", "sk-5f4c5d32b3b742bbbe43e44c2730040e"),
+            "api_key": os.environ.get("OPENAI_API_KEY", "YOUR_DEEPSEEK_API_KEY_HERE"),
             "base_url": "https://api.deepseek.com/v1"
         }]
 

@@ -1,0 +1,42 @@
+# PyAEDT and Simulation Ignore
+pyaedt-examples-main/
+pyaedt/
+simulation_results/
+
+# Python Ignore
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# AutoGen / LLM API Config Ignore
+OAI_CONFIG_LIST
+.env
+.env.*
+
+# IDE Ignore
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Ignore
+.DS_Store
+Thumbs.db
